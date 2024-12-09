@@ -56,7 +56,7 @@ function programCommand(name: string) {
     return program
         .command(name)
         .option('-e, --env <string>', 'Solana cluster env name', 'devnet')
-        .option('-r, --rpc <string>', 'Solana cluster RPC name', 'https://devnet.helius-rpc.com/?api-key=926da061-472b-438a-bbb1-f289333c4126')
+        .option('-r, --rpc <string>', 'Solana cluster RPC name', 'rpc')
         .option('-k, --keypair <string>', 'Solana wallet Keypair Path', '/home/ubuntu/pump-fun-contract/pump-science-contract/test_key.json')
 }
 

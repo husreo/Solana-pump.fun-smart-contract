@@ -130,19 +130,7 @@ pub fn lock_pool(
     let lp_amount = (product as f64).sqrt().round() as u64;
 
     let lock_accounts = vec![
-        AccountMeta::new(ctx.accounts.pool.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.lp_mint.key(), false),
-        AccountMeta::new(ctx.accounts.lock_escrow.key(), false),
-        AccountMeta::new(ctx.accounts.payer.key(), true),
-        AccountMeta::new(source_tokens.key(), false),
-        AccountMeta::new(ctx.accounts.escrow_vault.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.token_program.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.a_vault.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.b_vault.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.a_vault_lp.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.b_vault_lp.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.a_vault_lp_mint.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.b_vault_lp_mint.key(), false),
+        // lock accounts
     ];
     
     let lock_instruction = Instruction {
@@ -153,19 +141,7 @@ pub fn lock_pool(
 
     invoke_signed(&lock_instruction, 
         &[
-            ctx.accounts.pool.to_account_info(),
-            ctx.accounts.lp_mint.to_account_info(),
-            ctx.accounts.lock_escrow.to_account_info(),
-            ctx.accounts.payer.to_account_info(),
-            source_tokens.to_account_info(),
-            ctx.accounts.escrow_vault.to_account_info(),
-            ctx.accounts.token_program.to_account_info(),
-            ctx.accounts.a_vault.to_account_info(),
-            ctx.accounts.b_vault.to_account_info(),
-            ctx.accounts.a_vault_lp.to_account_info(),
-            ctx.accounts.b_vault_lp.to_account_info(),
-            ctx.accounts.a_vault_lp_mint.to_account_info(),
-            ctx.accounts.b_vault_lp_mint.to_account_info(),
+            // lock accounts
         ],
         signer_seeds
     )?;

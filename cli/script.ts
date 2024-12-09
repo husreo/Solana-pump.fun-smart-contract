@@ -2,23 +2,17 @@ import { Program, web3 } from '@project-serum/anchor';
 import * as anchor from '@project-serum/anchor';
 import fs from 'fs';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
-import { PUMPSCIENCE, SEEDS, METAPLEX_PROGRAM, INIT_DEFAULTS, GLOBAL_VAULT_SEED, MIGRATION_VAULT, SIMPLE_DEFAULT_BONDING_CURVE_PRESET } from './constants';
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
-import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
-import { fromWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters';
-import { PumpScienceSDK } from '../clients/js/src';
-import { keypairIdentity, publicKey, transactionBuilder, TransactionBuilder } from '@metaplex-foundation/umi';
-import { setComputeUnitLimit } from '@metaplex-foundation/mpl-toolbox';
-import { Connection, ComputeBudgetProgram, Transaction, PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction, LAMPORTS_PER_SOL, SYSVAR_CLOCK_PUBKEY, AddressLookupTableProgram, Keypair as Web3JsKeypair } from '@solana/web3.js';
+import { PUMPSCIENCE, SEEDS, INIT_DEFAULTS, MIGRATION_VAULT } from './constants';
+import { Connection, ComputeBudgetProgram, Transaction, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction, LAMPORTS_PER_SOL, SYSVAR_CLOCK_PUBKEY, AddressLookupTableProgram, Keypair as Web3JsKeypair } from '@solana/web3.js';
 import VaultImpl, { getVaultPdas } from '@mercurial-finance/vault-sdk';
-import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, NATIVE_MINT, createMint } from '@solana/spl-token';
+import { NATIVE_MINT } from '@solana/spl-token';
 import { BN } from "bn.js";
 import {
     getAssociatedTokenAccount
 } from './util';
 import AmmImpl, { PROGRAM_ID } from '@mercurial-finance/dynamic-amm-sdk';
 import { IDL } from '../target/types/pump_science';
-import { vault, derivePoolAddressWithConfig, createProgram, getOrCreateATAInstruction, deriveMintMetadata, wrapSOLInstruction, deriveLockEscrowPda, getSolPriceInUSD } from './util'
+import { derivePoolAddressWithConfig, createProgram, getOrCreateATAInstruction, deriveMintMetadata, wrapSOLInstruction, deriveLockEscrowPda, getSolPriceInUSD } from './util'
 
 let solConnection: web3.Connection = null;
 let program: Program = null;
@@ -26,7 +20,7 @@ let provider: anchor.Provider = null;
 let contractProvider: anchor.Provider = null;
 let payer: NodeWallet = null;
 const simpleMintKp = Web3JsKeypair.generate();
-const connection = new Connection("https://devnet.helius-rpc.com/?api-key=926da061-472b-438a-bbb1-f289333c4126");
+const connection = new Connection("rpc");
 
 // Address of the deployed program.
 let programId = new anchor.web3.PublicKey(PUMPSCIENCE);
@@ -227,25 +221,7 @@ export const migrate = async () => {
     const txLockPool = await program.methods
         .lockPool(tokenAAmount, tokenBAmount)
         .accounts({
-            vault,
-            pool: poolPubkey,
-            lpMint,
-            aVaultLp,
-            bVaultLp,
-            tokenBMint,
-            aVault,
-            bVault,
-            aVaultLpMint,
-            bVaultLpMint,
-            payerPoolLp,
-            payer: payer.publicKey,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            lockEscrow: lockEscrowPK,
-            escrowVault: escrowAta,
-            meteoraProgram: PROGRAM_ID,
-            eventAuthority
+           // lock accounts
         })
         .transaction();
     console.log("========== lock ==============");
@@ -253,38 +229,7 @@ export const migrate = async () => {
     const txCreatePool = await program.methods
         .createLockPool(tokenAAmount, tokenBAmount)
         .accounts({
-            global,
-            bondingCurve,
-            vault,
-            migrationVault,
-            pool: poolPubkey,
-            config,
-            lpMint,
-            aVaultLp,
-            bVaultLp,
-            tokenAMint,
-            tokenBMint,
-            aVault,
-            bVault,
-            aTokenVault,
-            bTokenVault,
-            aVaultLpMint,
-            bVaultLpMint,
-            payerTokenA,
-            payerTokenB,
-            payerPoolLp,
-            protocolTokenAFee,
-            protocolTokenBFee,
-            payer: payer.publicKey,
-            mintMetadata,
-            rent: SYSVAR_RENT_PUBKEY,
-            metadataProgram: METAPLEX_PROGRAM,
-            vaultProgram: vaultProgram.programId,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-            meteoraProgram: PROGRAM_ID,
-            eventAuthority
+            // meteora create accounts
         })
         .transaction();
 
@@ -301,38 +246,7 @@ export const migrate = async () => {
         });
 
     const addresses = [
-        global,
-        bondingCurve,
-        vault,
-        migrationVault,
-        poolPubkey,
-        config,
-        lpMint,
-        tokenAMint,
-        tokenBMint,
-        aVault,
-        bVault,
-        aTokenVault,
-        bTokenVault,
-        aVaultLp,
-        bVaultLp,
-        aVaultLpMint,
-        bVaultLpMint,
-        payerTokenA,
-        payerTokenB,
-        payerPoolLp,
-        protocolTokenAFee,
-        protocolTokenBFee,
-        payer.publicKey,
-        mintMetadata,
-        SYSVAR_RENT_PUBKEY,
-        METAPLEX_PROGRAM,
-        vaultProgram.programId,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        SystemProgram.programId,
-        new PublicKey(PROGRAM_ID),
-        eventAuthority,
+        // meteora create accounts
     ]
 
     const addAddressesInstruction1 = AddressLookupTableProgram.extendLookupTable({
@@ -355,45 +269,8 @@ export const migrate = async () => {
     const lutVTx1 = new VersionedTransaction(lutMsg1);
     lutVTx1.sign([payer.payer])
 
-    // const lutSim1 = await contractProvider.connection.simulateTransaction(lutVTx1, { sigVerify: true })
-
-    // console.log('lutSim1', lutSim1)
-
     const lutId1 = await contractProvider.connection.sendTransaction(lutVTx1)
-    console.log('lutId1', lutId1)
     const lutConfirm1 = await contractProvider.connection.confirmTransaction(lutId1, 'finalized')
-    console.log('lutConfirm1', lutConfirm1)
-
-
-    // const addAddressesInstruction2 = AddressLookupTableProgram.extendLookupTable({
-    //     payer: payer.publicKey,
-    //     authority: payer.publicKey,
-    //     lookupTable: lookupTableAddress,
-    //     addresses: addresses.slice(16)
-    // });
-
-    // latestBlockHash = await ammProgram.provider.connection.getLatestBlockhash(
-    //     ammProgram.provider.connection.commitment,
-    // );
-
-    // const lutMsg2 = new TransactionMessage({
-    //     payerKey: payer.publicKey,
-    //     recentBlockhash: latestBlockHash.blockhash,
-    //     instructions: [addAddressesInstruction2]
-    // }).compileToV0Message();
-
-    // const lutVTx2 = new VersionedTransaction(lutMsg2);
-    // lutVTx2.sign([payer.payer])
-
-    // // const lutSim2 = await contractProvider.connection.simulateTransaction(lutVTx2, { sigVerify: true })
-
-    // // console.log('lutSim2', lutSim2)
-
-    // const lutId2 = await contractProvider.connection.sendTransaction(lutVTx2)
-    // console.log('lutId2', lutId2)
-    // const lutConfirm2 = await contractProvider.connection.confirmTransaction(lutId2, 'finalized')
-    // console.log('lutConfirm2', lutConfirm2)
-
 
     const lookupTableAccount = await contractProvider.connection.getAddressLookupTable(lookupTableAddress, { commitment: 'finalized' })
 
@@ -409,11 +286,8 @@ export const migrate = async () => {
 
     const sim = await contractProvider.connection.simulateTransaction(createVTx, { sigVerify: true })
 
-    console.log('sim', sim)
     const id = await contractProvider.connection.sendTransaction(createVTx)
-    console.log('id', id)
     const confirm = await contractProvider.connection.confirmTransaction(id)
-    console.log('confirm', confirm)
 
     const lockPoolTxMsg = new TransactionMessage({
         payerKey: payer.publicKey,
@@ -427,51 +301,8 @@ export const migrate = async () => {
 
     const lockPoolSim = await contractProvider.connection.simulateTransaction(lockPoolVTx, { sigVerify: true })
 
-    console.log('lockPoolSim', lockPoolSim)
     const lockPoolId = await contractProvider.connection.sendTransaction(lockPoolVTx)
-    console.log('lockPoolId', lockPoolId)
     const lockPoolConfirm = await contractProvider.connection.confirmTransaction(lockPoolId)
-    console.log('lockPoolConfirm', lockPoolConfirm)
 
     return lockPoolId;
-}
-
-export const createBondingCurve = async () => {
-    const rpcUrl = "https://devnet.helius-rpc.com/?api-key=926da061-472b-438a-bbb1-f289333c4126"
-    let umi = createUmi(rpcUrl).use(web3JsRpc(provider.connection));
-    const web3Keypair = Web3JsKeypair.fromSecretKey(Uint8Array.from(require("../test_key.json")))
-    const masterKp = fromWeb3JsKeypair(
-        web3Keypair
-    );
-    const curveSdk = new PumpScienceSDK(
-        // creator signer
-        umi.use(keypairIdentity(masterKp))
-      ).getCurveSDK(publicKey(simpleMintKp.publicKey.toBase58()));
-  
-      console.log("Curve PUBKEYS:");
-  
-      console.log("globalPda[0]", curveSdk.PumpScience.globalPda[0]);
-      console.log("bondingCurvePda[0]", curveSdk.bondingCurvePda[0]);
-      console.log("bondingCurveTknAcc[0]", curveSdk.bondingCurveTokenAccount[0]);
-      console.log("metadataPda[0]", curveSdk.mintMetaPda[0]);
-      
-      const txBuilder = curveSdk.createBondingCurve(
-        SIMPLE_DEFAULT_BONDING_CURVE_PRESET,
-        // needs the mint Kp to create the curve
-        fromWeb3JsKeypair(simpleMintKp)
-      );
-  
-      await processTransaction(umi, txBuilder);
-  
-      const bondingCurveData = await curveSdk.fetchData();
-      console.log("bondingCurveData", bondingCurveData);
-}
-
-async function processTransaction(umi, txBuilder: TransactionBuilder) {
-    let txWithBudget = await transactionBuilder().add(
-      setComputeUnitLimit(umi, { units: 6_000_000 })
-    );
-    
-    const fullBuilder = txBuilder.prepend(txWithBudget);
-    return await fullBuilder.sendAndConfirm(umi);
 }

@@ -5,7 +5,7 @@ import {
 import { BN } from "bn.js";
 
 export const PUMPSCIENCE = new PublicKey("HrxD6G1BXH4Sc1mhNxegse5rh1ZjMcetxWTGM5DfRAhZ");
-export const PROGRAM_ID = 'Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB';
+export const PROGRAM_ID = 'contract program ID';
 export const VAULT_SEED = "vault-authority";
 export const GLOBAL_VAULT_SEED = "fee-vault";
 export const METAPLEX_PROGRAM = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');

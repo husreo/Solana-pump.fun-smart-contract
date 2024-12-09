@@ -136,32 +136,7 @@ pub fn initialize_pool_with_config(
     msg!("Passed Accounts");
 
     let mut accounts = vec![
-        AccountMeta::new(ctx.accounts.pool.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.config.key(), false),
-        AccountMeta::new(ctx.accounts.lp_mint.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.token_a_mint.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.token_b_mint.key(), false),
-        AccountMeta::new(ctx.accounts.a_vault.key(), false),
-        AccountMeta::new(ctx.accounts.b_vault.key(), false),
-        AccountMeta::new(ctx.accounts.a_token_vault.key(), false),
-        AccountMeta::new(ctx.accounts.b_token_vault.key(), false),
-        AccountMeta::new(ctx.accounts.a_vault_lp_mint.key(), false),
-        AccountMeta::new(ctx.accounts.b_vault_lp_mint.key(), false),
-        AccountMeta::new(ctx.accounts.a_vault_lp.key(), false),
-        AccountMeta::new(ctx.accounts.b_vault_lp.key(), false),
-        AccountMeta::new(ctx.accounts.payer_token_a.key(), false),
-        AccountMeta::new(ctx.accounts.payer_token_b.key(), false),
-        AccountMeta::new(ctx.accounts.payer_pool_lp.key(), false),
-        AccountMeta::new(ctx.accounts.protocol_token_a_fee.key(), false),
-        AccountMeta::new(ctx.accounts.protocol_token_b_fee.key(), false),
-        AccountMeta::new(ctx.accounts.payer.key(), true),
-        AccountMeta::new_readonly(ctx.accounts.rent.key(), false),
-        AccountMeta::new(ctx.accounts.mint_metadata.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.metadata_program.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.vault_program.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.token_program.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.associated_token_program.key(), false),
-        AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
+        // meteora accounts
     ];
     accounts.extend(
         ctx.remaining_accounts.iter().map(|acc| AccountMeta {
@@ -186,32 +161,7 @@ pub fn initialize_pool_with_config(
     invoke_signed(
         &instruction,
         &[
-            ctx.accounts.pool.to_account_info(),
-            ctx.accounts.config.to_account_info(),
-            ctx.accounts.lp_mint.to_account_info(),
-            ctx.accounts.token_a_mint.to_account_info(),
-            ctx.accounts.token_b_mint.to_account_info(),
-            ctx.accounts.a_vault.to_account_info(),
-            ctx.accounts.b_vault.to_account_info(),
-            ctx.accounts.a_token_vault.to_account_info(),
-            ctx.accounts.b_token_vault.to_account_info(),
-            ctx.accounts.a_vault_lp_mint.to_account_info(),
-            ctx.accounts.b_vault_lp_mint.to_account_info(),
-            ctx.accounts.a_vault_lp.to_account_info(),
-            ctx.accounts.b_vault_lp.to_account_info(),
-            ctx.accounts.payer_token_a.to_account_info(),
-            ctx.accounts.payer_token_b.to_account_info(),
-            ctx.accounts.payer_pool_lp.to_account_info(),
-            ctx.accounts.protocol_token_a_fee.to_account_info(),
-            ctx.accounts.protocol_token_b_fee.to_account_info(),
-            ctx.accounts.payer.to_account_info(),
-            ctx.accounts.rent.to_account_info(),
-            ctx.accounts.mint_metadata.to_account_info(),
-            ctx.accounts.metadata_program.to_account_info(),
-            ctx.accounts.vault_program.to_account_info(),
-            ctx.accounts.token_program.to_account_info(),
-            ctx.accounts.associated_token_program.to_account_info(),
-            ctx.accounts.system_program.to_account_info(),
+           // meteora accounts
         ],
         signer_seeds
     )?;
