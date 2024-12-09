@@ -15,17 +15,7 @@ impl BondingCurve {
         let start_time = self.start_time;
         msg!("start time =====:{}", start_time);
         let clock = Clock::get()?;
-
-        // let time_now = clock.unix_timestamp;
-        // let mut sol_fee: u64 = 0;
-        // if (time_now - start_time) < 150 * 400 {
-        //     sol_fee = (0.99 / 100.0 * amount as f64) as u64 ;
-        // } else if (time_now - start_time) > 150 * 400 && (time_now - start_time) < 250 * 400 {
-        //     let exp_part = (0.05 * ((time_now - start_time) as f64 / 400.0 - 150.0)).exp(); // Compute the exponent part
-        //     sol_fee = ((0.01 + (0.99 - 0.01)) * amount as f64 / (1.0 + exp_part)) as u64;
-        // } else if (time_now - start_time) as f64 / 86400.0 >= 500.0 {
-        //     sol_fee = (amount as f64 * 0.01 / 100.0) as u64;
-        // }
+        // fee logic
         Ok((0.99 / 100.0 * amount as f64) as u64)
     }
 
